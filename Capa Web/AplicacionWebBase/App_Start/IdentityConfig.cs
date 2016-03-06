@@ -1,24 +1,18 @@
 ﻿using AplicacionWebBase.Models;
+using AplicacionWebBase.Services;
+using IdentityBase;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using System;
+using System.Configuration;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace AplicacionWebBase
 {
-    public class EmailService : IIdentityMessageService
-    {
-        public Task SendAsync(IdentityMessage message)
-        {
-            // Plug in your email service here to send an email.
-            return Task.FromResult(0);
-        }
-    }
-
     public class SmsService : IIdentityMessageService
     {
         public Task SendAsync(IdentityMessage message)
@@ -72,7 +66,7 @@ namespace AplicacionWebBase
                 Subject = "Security Code",
                 BodyFormat = "Your security code is {0}"
             });
-            manager.EmailService = new EmailService();
+            manager.EmailService = new EmailService(ConfigurationManager.AppSettings["emailService:host"], int.Parse(ConfigurationManager.AppSettings["emailService:port"]), ConfigurationManager.AppSettings["emailService:accountEmail"], ConfigurationManager.AppSettings["emailService:accountPass"]);
             manager.SmsService = new SmsService();
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
@@ -94,7 +88,7 @@ namespace AplicacionWebBase
 
         public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user)
         {
-            return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
+            return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager, DefaultAuthenticationTypes.ApplicationCookie);
         }
 
         public static ApplicationSignInManager Create(IdentityFactoryOptions<ApplicationSignInManager> options, IOwinContext context)
