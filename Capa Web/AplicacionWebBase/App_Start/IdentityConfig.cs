@@ -66,7 +66,12 @@ namespace AplicacionWebBase
                 Subject = "Security Code",
                 BodyFormat = "Your security code is {0}"
             });
-            manager.EmailService = new EmailService(ConfigurationManager.AppSettings["emailService:host"], int.Parse(ConfigurationManager.AppSettings["emailService:port"]), ConfigurationManager.AppSettings["emailService:accountEmail"], ConfigurationManager.AppSettings["emailService:accountPass"]);
+            manager.EmailService = new EmailService(
+                ConfigurationManager.AppSettings["emailService:host"], 
+                int.Parse(ConfigurationManager.AppSettings["emailService:port"]), 
+                ConfigurationManager.AppSettings["emailService:accountEmail"], 
+                ConfigurationManager.AppSettings["emailService:accountPass"]
+                );
             manager.SmsService = new SmsService();
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
